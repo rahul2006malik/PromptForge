@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PromptForge — Weak prompt in. Precision out.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="logo">
+      <svg class="logo-hex" width="16" height="16" viewBox="0 0 20 22" fill="none">
+        <path d="M10 1L19 6V16L10 21L1 16V6L10 1Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M10 6L15.196 9V15L10 18L4.804 15V9L10 6Z" fill="currentColor" opacity="0.35"/>
+      </svg>
+      <span class="logo-wordmark">PromptForge</span>
+    </div>
+
+    <div class="model-selector-wrapper">
+      <span class="selector-label">Model</span>
+      <button class="model-trigger" id="modelTrigger">
+        <span id="selectedModelName">Loading…</span>
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" class="trigger-chevron">
+          <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div class="model-dropdown" id="modelDropdown"></div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- ── Input Section ──────────────────────────────────────────────── -->
+    <section class="input-section" id="inputSection">
+
+      <!-- Oversized editorial hero -->
+      <div class="hero-block">
+        <p class="hero-eyebrow">Prompt Engineering Pipeline</p>
+        <h1 class="hero-title">
+          <span class="ht-line">Weak</span>
+          <span class="ht-line ht-accent">Prompt.</span>
+          <span class="ht-line">Precision</span>
+          <span class="ht-line ht-accent">Out.</span>
+        </h1>
+        <!-- Decorative rotated label — grid-breaker -->
+        <div class="rotated-tag">4 STAGE PIPELINE</div>
+      </div>
+
+      <!-- Underline-style input -->
+      <div class="input-block" id="inputBlock">
+        <div class="input-field">
+          <label class="input-label" for="promptInput">Your prompt</label>
+          <textarea
+            id="promptInput"
+            class="prompt-textarea"
+            placeholder="write a python function that sorts a list"
+            rows="3"
+            spellcheck="false"
+          ></textarea>
+          <div class="input-line" id="inputLine"></div>
+        </div>
+
+        <div class="input-meta">
+          <span class="char-count" id="charCount">0 / 4000</span>
+          <span class="kbd-hint">Ctrl+Enter</span>
+          <button class="forge-btn" id="forgeBtn">
+            <span>Forge Prompt</span>
+            <span class="forge-arrow">→</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pipeline stages legend (decorative, educational) -->
+      <div class="stage-legend">
+        <div class="legend-item"><span class="leg-num">01</span><span class="leg-label">Diagnosis</span></div>
+        <div class="legend-sep">—</div>
+        <div class="legend-item"><span class="leg-num">02</span><span class="leg-label">Context</span></div>
+        <div class="legend-sep">—</div>
+        <div class="legend-item"><span class="leg-num">03</span><span class="leg-label">Role</span></div>
+        <div class="legend-sep">—</div>
+        <div class="legend-item"><span class="leg-num">04</span><span class="leg-label">Constraints</span></div>
+        <div class="legend-sep">—</div>
+        <div class="legend-item"><span class="leg-num leg-best">★</span><span class="leg-label">Best Version</span></div>
+      </div>
+
+    </section>
+
+    <!-- ── Pipeline Output ────────────────────────────────────────────── -->
+    <section class="pipeline-section" id="pipelineSection" style="display:none;" aria-live="polite">
+
+      <!-- What we're forging -->
+      <div class="forge-context" id="forgeContext"></div>
+
+      <!-- Diagnosis card -->
+      <div class="diag-card" id="diagnosisCard" style="display:none;">
+        <div class="diag-header">
+          <span class="stage-chip chip-diag">Diagnosis</span>
+          <span class="diag-domain" id="domainBadge"></span>
+        </div>
+        <div class="diag-summary" id="diagSummary"></div>
+        <div class="weakness-grid" id="weaknessList"></div>
+        <div class="score-row" id="initialScoreGrid"></div>
+      </div>
+
+      <!-- Stage cards injected here -->
+      <div id="stageCards"></div>
+
+      <!-- Best version -->
+      <div class="best-card" id="bestCard" style="display:none;">
+        <div class="best-top-rule"></div>
+        <div class="best-header">
+          <span class="best-label">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="var(--accent)">
+              <polygon points="5.5,0.5 7,4 11,4.5 8.25,7 9.1,11 5.5,9 1.9,11 2.75,7 0,4.5 4,4"/>
+            </svg>
+            Best Version
+          </span>
+          <div class="best-controls">
+            <span class="overall-score" id="overallScore"></span>
+            <button class="copy-btn" id="copyBtn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Copy
+            </button>
+          </div>
+        </div>
+        <div class="best-prompt" id="bestPrompt"></div>
+        <div class="synthesis-block" id="synthesisNotes"></div>
+        <div class="progression-block" id="scoreProgression"></div>
+      </div>
+
+      <div class="reset-row" id="resetRow" style="display:none;">
+        <button class="reset-btn" id="resetBtn">← Forge another prompt</button>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/diff-match-patch@1.0.5/index.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
