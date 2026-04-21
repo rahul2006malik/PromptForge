@@ -1,113 +1,105 @@
 # PromptForge
 
-A prompt engineering pipeline that transforms weak prompts into precision prompts through four structured stages: context enrichment, role definition, constraint addition, and final synthesis.
+**Weak Prompt In. Precision Out.**
 
-## Setup
+PromptForge is a sophisticated prompt engineering pipeline designed to transform simple, underspecified prompts into high-performance "precision prompts." It uses a structured 4-stage refinement process—Context Enrichment, Role Definition, Constraint Addition, and Final Synthesis—to ensure your LLM interactions are reliable, specific, and production-ready.
 
-### 1. Clone and install dependencies
+---
 
+## 🚀 Key Features
+
+- **Multi-Stage Pipeline:** Progressively improves prompts with specialized LLM calls at each step.
+- **Live Scoring:** Visualizes prompt quality across four axes: Specificity, Role Clarity, Context Depth, and Constraints.
+- **Curated Model Catalog:** Supports high-performance cloud models including DeepSeek, Kimi, and Gemini.
+- **SSE Streaming:** Real-time updates as the pipeline processes your prompt.
+- **Modern UI:** Responsive dashboard with diff highlights to show exactly what was added at each stage.
+
+---
+
+## 📂 Project Structure
+
+```text
+PromptForge/
+├── backend/
+│   ├── main.py                # FastAPI server & SSE logic
+│   ├── config.py              # Configuration & Environment loading
+│   ├── models_catalog.py      # Curated model list & metadata
+│   └── pipeline/
+│       ├── stages.py          # Core pipeline stage functions
+│       ├── client.py          # Ollama Cloud API wrapper
+│       └── prompts.py         # Specialized system prompts
+├── frontend/
+│   ├── index.html             # Single-page application UI
+│   ├── style.css              # Custom design system
+│   └── app.js                 # SSE consumer & UI orchestration
+├── .env.example               # Template for your credentials
+├── requirements.txt           # Python dependencies
+└── run.py                     # Project entry point
+```
+
+---
+
+## 🛠️ Getting Started
+
+### 1. Prerequisites
+- **Python 3.10+**
+- **Ollama Cloud API Key:** Get your key from [Ollama.com](https://ollama.com)
+
+### 2. Installation
 ```bash
-cd promptforge
+# Clone the repository
+git clone https://github.com/rahul2006malik/PromptForge.git
+cd PromptForge
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Configure your API key
-
+### 3. Configuration
+Copy the example environment file and add your API key:
 ```bash
 cp .env.example .env
-# Edit .env and add your Ollama API key
+```
+Edit `.env`:
+```env
+OLLAMA_API_KEY=your_actual_key_here
+OLLAMA_HOST=https://ollama.com
 ```
 
-```
-OLLAMA_API_KEY=your_key_here
-```
-
-### 3. Run the server
-
+### 4. Running the Server
 ```bash
-uvicorn backend.main:app --reload --port 8000
+python run.py
 ```
-
-Then open [http://localhost:8000](http://localhost:8000) in your browser.
+Visit **[http://localhost:8000](http://localhost:8000)** in your browser.
 
 ---
 
-## Project Structure
+## 🧪 Testing the Setup
 
-```
-promptforge/
-├── backend/
-│   ├── main.py                # FastAPI app — routes, SSE streaming
-│   ├── models_catalog.py      # Curated Ollama Cloud model list
-│   ├── config.py              # Environment config
-│   └── pipeline/
-│       ├── stages.py          # One function per pipeline stage
-│       ├── prompts.py         # System prompts for each stage
-│       └── client.py          # Ollama Cloud API wrapper
-├── frontend/
-│   ├── index.html             # Single-page UI
-│   ├── style.css              # Styling
-│   └── app.js                 # SSE consumer, diff rendering, UI logic
-├── .env.example
-└── requirements.txt
-```
+Follow these steps to ensure everything is running correctly:
+
+1.  **Health Check:** Visit `http://localhost:8000/health`. You should see `{"status": "ok"}`.
+2.  **Models API:** Visit `http://localhost:8000/api/models`. You should see a list of available models.
+3.  **End-to-End Test:** 
+    - Enter a weak prompt like `write code`.
+    - Select a model (e.g., Gemini 3 Flash).
+    - Click **Forge Prompt** and watch the 5-stage progression complete.
 
 ---
 
-## Pipeline
-
-```
-Weak Prompt
-    │
-    ▼  Diagnosis       — scores 4 axes, identifies weaknesses
-    ▼  Context Stage   — adds domain framing and background
-    ▼  Role Stage      — assigns expert persona
-    ▼  Constraint Stage— adds output format and quality guardrails
-    ▼
-Best Version           — synthesis of all stages, not just the last one
-```
-
-Each stage returns structured JSON: improved prompt, list of changes made, reasoning, and updated scores on four axes (specificity, role clarity, context depth, constraint quality).
-
-Scores are visualized as a live progression chart in the UI.
-
----
-
-## API
+## 📝 API Reference
 
 | Endpoint | Method | Description |
-|---|---|---|
-| `/` | GET | Serves the frontend |
-| `/api/models` | GET | Returns curated model list with metadata |
-| `/api/refine` | POST | Runs the pipeline, returns SSE stream |
-| `/health` | GET | Health check |
-
-### POST /api/refine
-
-```json
-{
-  "prompt": "your weak prompt here",
-  "model": "deepseek-v3.1:671b-cloud"
-}
-```
-
-Returns a Server-Sent Events stream with event types:
-- `pipeline_start`
-- `diagnosis`
-- `stage_start`
-- `stage_result`
-- `complete`
-- `error`
+| :--- | :--- | :--- |
+| `/` | `GET` | Serves the frontend application |
+| `/api/models` | `GET` | Returns the curated model list |
+| `/api/refine` | `POST` | Starts the refinement pipeline (SSE Stream) |
+| `/health` | `GET` | Server health check |
 
 ---
 
-## Models
+## 🤝 Contributing
+For internal development, please ensure you check the local `BUGS_AND_IMPROVEMENTS_REPORT.md` before starting new features.
 
-| Model | Tag | Best For |
-|---|---|---|
-| DeepSeek V3.1 | `deepseek-v3.1:671b-cloud` | Best overall reasoning |
-| Kimi K2 Thinking | `kimi-k2-thinking:cloud` | Deep step-by-step |
-| GLM-5 | `glm-5:cloud` | Long-horizon tasks |
-| MiniMax M2.7 | `minimax-m2.7:cloud` | Structured output |
-| Qwen3-Next 80B | `qwen3-next:80b-cloud` | Balanced speed |
-| Gemini 3 Flash | `gemini-3-flash-preview:cloud` | Fastest |
+---
+**Note:** Do not commit your `.env` file. It is ignored by Git to protect your API keys.
