@@ -41,6 +41,7 @@ htmlcov/
 *.swp
 *.swo
 
-# Project Reports (Optional - keep if you want them in the repo)
-# SETUP_AND_TEST_REPORT.md
-# BUGS_AND_IMPROVEMENTS_REPORT.md
+# Project Reports
+SETUP_AND_TESTS.md
+SETUP_AND_TEST_REPORT.md
+BUGS_AND_IMPROVEMENTS_REPORT.md
